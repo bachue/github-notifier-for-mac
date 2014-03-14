@@ -1,0 +1,82 @@
+#!/usr/bin/env ruby -KU
+
+require 'time'
+require 'uri'
+require File.expand_path(File.dirname(__FILE__) + '/helpers')
+
+NOTIFICATION_CHECK_URL = 'https://api.github.com/notifications'.freeze
+
+def check_notifications!
+  check_system
+  token = read_oauth_basic_token
+  uri = URI NOTIFICATION_CHECK_URL
+
+  uri.query = "since=#{since}" if since
+
+  notifications = get_json uri, basic_auth_header(token)
+
+  notifications.map do |notification|
+    Thread.start { send_notification notification, token }
+  end.each(&:join)
+  touch_timestamp
+end
+
+def read_oauth_basic_token
+  if File.readable? oauth_basic_token_path
+    File.read oauth_basic_token_path
+  else
+    $stderr.puts <<-ERROR
+Failed to read #{oauth_basic_token_path}
+Please apply for a personal access token on https://github.com/settings/applications#personal-access-tokens
+Run `github-notifier <token>`
+    ERROR
+    exit 1
+  end
+end
+
+def since
+  time = read_time
+  iso8601(time) if time
+end
+
+def read_time
+  if File.readable? timestamp_path
+    str = File.read timestamp_path
+    Time.at str.to_i
+  end
+end
+
+def touch_timestamp
+  File.open(timestamp_path, 'w') {|file| file << Time.now.to_i.to_s }
+end
+
+def check_system
+  if ENV['_system_name'] != 'OSX'
+    $stderr.puts 'Github Notifier can only works on Mac OS X'
+    exit(-2)
+  end
+
+  if ENV['_system_version'].to_f < 10.8
+    $stderr.puts 'Github Notifier can only works on Mac OS X, at least Mountain Lion (10.8)'
+    $stderr.puts 'Please upgrade your system and retry'
+    exit(-1)
+  end
+
+  if `which terminal-notifier`.empty?
+    $stderr.puts 'Github Notifier depends on terminal-notifier'
+    $stderr.puts 'Please run `brew install terminal-notifier` to install it and retry'
+    exit(-3)
+  end
+end
+
+def send_notification notification, token
+  title = notification['repository']['full_name']
+  message = notification['subject']['title']
+  details_url = URI notification['subject']['url']
+  details = get_json details_url, basic_auth_header(token)
+  url = details['html_url']
+
+  `terminal-notifier -subtitle 'Github Notification' -title #{title.inspect} -message #{message.inspect} -open #{url.inspect}`
+end
+
+check_notifications!

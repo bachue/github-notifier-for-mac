@@ -1,0 +1,35 @@
+#!/usr/bin/env ruby -KU
+
+require 'uri'
+require File.expand_path(File.dirname(__FILE__) + '/helpers')
+
+AUTHENTICATION_CHECK_URL = 'https://api.github.com/user'.freeze
+
+def write_down_and_check!
+  if ARGV.count != 1
+    $stderr.puts "Usage: #{$0} token"
+    exit(-1)
+  else
+    token = ARGV.first
+    if write_oauth_basic_token(token) && check(token)
+      $stdout.puts "OK"
+    else
+      $stderr.puts 'Failed! Please double check the access tokens on https://github.com/settings/applications#personal-access-tokens!'
+      exit 1
+    end
+  end
+end
+
+def write_oauth_basic_token token
+  path = oauth_basic_token_path
+  File.open(path, 'w') {|file| file << token }
+  true
+end
+
+def check token
+  uri = URI AUTHENTICATION_CHECK_URL
+  response = get uri, basic_auth_header(token)
+  response.code == '200'
+end
+
+write_down_and_check!
