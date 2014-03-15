@@ -46,35 +46,18 @@ end
 
 def touch_timestamp
   File.open(timestamp_path, 'w') {|file| file << Time.now.to_i.to_s }
-end
-
-def check_system
-  if `uname`.strip != 'Darwin'
-    $stderr.puts 'Github Notifier can only works on Mac OS X'
-    exit(-2)
-  end
-
-  if `sw_vers -productVersion`.strip.to_f < 10.8
-    $stderr.puts 'Github Notifier can only works on Mac OS X, at least Mountain Lion (10.8)'
-    $stderr.puts 'Please upgrade your system and retry'
-    exit(-1)
-  end
-
-  if `which terminal-notifier`.empty?
-    $stderr.puts 'Github Notifier depends on terminal-notifier'
-    $stderr.puts 'Please run `brew install terminal-notifier` to install it and retry'
-    exit(-3)
-  end
+  File.chmod 0666, timestamp_path
 end
 
 def send_notification notification, token
   title = notification['repository']['full_name']
   message = notification['subject']['title']
+  type = notification['subject']['type'].scan(/[A-Z][a-z]+/).join(' ')
   details_url = URI notification['subject']['url']
   details = get_json details_url, basic_header(token)
   url = details['html_url']
 
-  `terminal-notifier -subtitle 'Github Notification' -title #{title.inspect} -message #{message.inspect} -open #{url.inspect}`
+  `#{$terminal_notifier} -title 'Github #{type}' -subtitle #{title.inspect} -message #{message.inspect} -open #{url.inspect}`
 end
 
 check_notifications!

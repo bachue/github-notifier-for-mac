@@ -44,3 +44,28 @@ end
 def iso8601 time
   time.utc.strftime('%FT%TZ')
 end
+
+def check_system
+  if `uname`.strip != 'Darwin'
+    $stderr.puts 'Github Notifier can only works on Mac OS X'
+    exit(-2)
+  end
+
+  if `sw_vers -productVersion`.strip.to_f < 10.8
+    $stderr.puts 'Github Notifier can only works on Mac OS X, at least Mountain Lion (10.8)'
+    $stderr.puts 'Please upgrade your system and retry'
+    exit(-1)
+  end
+
+  if !`which terminal-notifier`.empty?
+    $terminal_notifier = 'terminal-notifier'
+  elsif File.executable? '/usr/local/bin/terminal-notifier'
+    $terminal_notifier = '/usr/local/bin/terminal-notifier'
+  end
+
+  unless $terminal_notifier
+    $stderr.puts 'Github Notifier depends on terminal-notifier'
+    $stderr.puts 'Please run `brew install terminal-notifier` to install it and retry'
+    exit(-3)
+  end
+end
