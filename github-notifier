@@ -1,24 +1,31 @@
 #!/usr/bin/env ruby -KU
 
 require 'uri'
+require 'erb'
 require File.expand_path(File.dirname(__FILE__) + '/helpers')
 
 AUTHENTICATION_CHECK_URL = 'https://api.github.com/user'.freeze
 
 def write_down_and_check!
-  if ARGV.count == 0
+  case ARGV[0]
+  when nil
     exec 'open', ACCESS_TOKEN_URL
-  elsif ARGV.count == 1
-    token = ARGV.first
-    if write_oauth_basic_token(token) && check(token)
-      $stdout.puts "OK"
+  when '--help'
+    exec 'echo', "Usage: #{$0} token"
+  when String
+    token = ARGV[0]
+    if check(token) && write_oauth_basic_token(token)
+      launchd_path = File.expand_path '~/Library/LaunchAgents/git.bachue.githubnotifier.plist'
+      File.open(launchd_path, 'w') do |f|
+        f << ERB.new(File.read(File.expand_path(File.dirname(__FILE__) + '/git.bachue.githubnotifier.plist.erb'))).result
+      end
+      `launchctl unload #{launchd_path}` # Ignore any error message
+      $stdout.puts "launchctl load #{launchd_path}"
+      exec 'launchctl', 'load', launchd_path
     else
       $stderr.puts "Failed! Please double check the access tokens on #{ACCESS_TOKEN_URL}!"
       exit 1
     end
-  else
-    $stderr.puts "Usage: #{$0} token"
-    exit(-1)
   end
 end
 
@@ -30,7 +37,7 @@ end
 
 def check token
   uri = URI AUTHENTICATION_CHECK_URL
-  response = get uri, basic_auth_header(token)
+  response = get uri, basic_header(token)
   response.code == '200'
 end
 

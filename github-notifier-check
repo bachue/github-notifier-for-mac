@@ -13,7 +13,7 @@ def check_notifications!
 
   uri.query = "since=#{since}" if since
 
-  notifications = get_json uri, basic_auth_header(token)
+  notifications = get_json uri, basic_header(token)
 
   notifications.each { |notification| send_notification notification, token }
   touch_timestamp
@@ -49,12 +49,12 @@ def touch_timestamp
 end
 
 def check_system
-  if ENV['_system_name'] != 'OSX'
+  if `uname`.strip != 'Darwin'
     $stderr.puts 'Github Notifier can only works on Mac OS X'
     exit(-2)
   end
 
-  if ENV['_system_version'].to_f < 10.8
+  if `sw_vers -productVersion`.strip.to_f < 10.8
     $stderr.puts 'Github Notifier can only works on Mac OS X, at least Mountain Lion (10.8)'
     $stderr.puts 'Please upgrade your system and retry'
     exit(-1)
@@ -71,7 +71,7 @@ def send_notification notification, token
   title = notification['repository']['full_name']
   message = notification['subject']['title']
   details_url = URI notification['subject']['url']
-  details = get_json details_url, basic_auth_header(token)
+  details = get_json details_url, basic_header(token)
   url = details['html_url']
 
   `terminal-notifier -subtitle 'Github Notification' -title #{title.inspect} -message #{message.inspect} -open #{url.inspect}`
