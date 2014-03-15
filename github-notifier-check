@@ -15,8 +15,8 @@ def check_notifications!
 
   notifications = get_json uri, basic_header(token)
 
-  notifications.each { |notification| send_notification notification, token }
   touch_timestamp
+  notifications.each { |notification| send_notification notification, token }
 end
 
 def read_oauth_basic_token

@@ -1,4 +1,5 @@
-require File.expand_path(File.dirname(__FILE__) + '/okjson')
+$: << File.expand_path(File.dirname(__FILE__))
+require 'json'
 require 'base64'
 require 'net/http'
 require 'net/https'
@@ -23,7 +24,7 @@ def get_json uri, headers
     $stderr.puts 'Failed to check Github! Please check your access token and network connection!'
     exit 2
   end
-  OkJson.decode response.body
+  JSON.parse response.body
 end
 
 def oauth_basic_token_path
