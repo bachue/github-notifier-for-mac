@@ -27,7 +27,7 @@ def read_oauth_basic_token
   else
     $stderr.puts <<-ERROR
 Failed to read #{oauth_basic_token_path}
-Please apply for a personal access token on https://github.com/settings/applications#personal-access-tokens
+Please apply for a personal access token on #{ACCESS_TOKEN_URL}
 Run `github-notifier <token>`
     ERROR
     exit 1

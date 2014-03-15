@@ -3,6 +3,8 @@ require 'json'
 require 'net/http'
 require 'net/https'
 
+ACCESS_TOKEN_URL = 'https://github.com/settings/applications#personal-access-tokens'.freeze
+
 def get uri, headers
   http = Net::HTTP.new uri.host, uri.port
   http.use_ssl = true if uri.scheme == 'https'
