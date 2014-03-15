@@ -9,7 +9,10 @@ def get uri, headers
   http = Net::HTTP.new uri.host, uri.port
   http.use_ssl = true if uri.scheme == 'https'
 
-  request = Net::HTTP::Get.new uri.path, headers
+  path = uri.path
+  path += '?' + uri.query if uri.query
+
+  request = Net::HTTP::Get.new path, headers
   http.request request
 end
 

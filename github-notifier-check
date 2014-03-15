@@ -15,9 +15,7 @@ def check_notifications!
 
   notifications = get_json uri, basic_auth_header(token)
 
-  notifications.map do |notification|
-    Thread.start { send_notification notification, token }
-  end.each(&:join)
+  notifications.each { |notification| send_notification notification, token }
   touch_timestamp
 end
 
