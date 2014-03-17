@@ -57,7 +57,7 @@ execute this if you use [HomeBrew](http://brew.sh/)
 
 # Issue or Advice
 
-Any issue or advice are appreciated, pull request will be better, of course!
+Any issue or advice is appreciated, pull request will be better, of course!
 
 # License
 

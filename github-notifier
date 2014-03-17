@@ -17,7 +17,7 @@ def write_down_and_check!
     $stdout.puts "Usage: #{$0} token"
     $stdout.puts
     $stdout.puts 'Learn more at: https://github.com/bachue/github-notifier-for-mac'
-    $stdout.puts 'Any issue or pull request are appreciated!'
+    $stdout.puts 'Any issue or pull request is appreciated!'
   when String
     token = ARGV[0]
     if check(token) && write_oauth_basic_token(token)
