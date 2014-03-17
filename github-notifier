@@ -11,10 +11,13 @@ def write_down_and_check!
   case ARGV[0]
   when nil
     exec 'open', ACCESS_TOKEN_URL
+  when '--version'
+    $stdout.puts 'Github Notifier for Mac ' + File.read(File.expand_path(File.dirname(__FILE__) + '/version'))
   when '--help'
     $stdout.puts "Usage: #{$0} token"
     $stdout.puts
-    $stdout.puts "Learn more at: https://github.com/bachue/github-notifier-for-mac"
+    $stdout.puts 'Learn more at: https://github.com/bachue/github-notifier-for-mac'
+    $stdout.puts 'Any issue or pull request are appreciated!'
   when String
     token = ARGV[0]
     if check(token) && write_oauth_basic_token(token)

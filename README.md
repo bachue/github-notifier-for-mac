@@ -54,3 +54,11 @@ execute this if you use [HomeBrew](http://brew.sh/)
 
 2. Delete the project directory.
 3. Done.
+
+# Issue or Advice
+
+Any issue or advice are appreciated, pull request will be better, of course!
+
+# License
+
+Released under the GPL v2 license
