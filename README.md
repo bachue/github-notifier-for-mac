@@ -2,7 +2,16 @@
 
 A simple tool, which can notify you any new notification in Github.
 
-Depends on Notification Center, Mac OS X >= 10.8
+With it, all your latest Github notifications will be notified by Notification Center, just like:
+
+![](imgs/notification_1.png)
+
+You can click it and go to the detail page.
+
+## Dependencies
+
+- Mac OS X at least Mountain Lion(>= 10.8)
+- [terminal-notifier](https://github.com/alloy/terminal-notifier)
 
 ## Install
 
