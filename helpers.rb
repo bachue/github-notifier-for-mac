@@ -60,7 +60,7 @@ def check_system
 
   if !`which terminal-notifier`.empty?
     $terminal_notifier = 'terminal-notifier'
-  elsif File.executable? '/usr/local/bin/terminal-notifier'
+  elsif File.executable? '/usr/local/bin/terminal-notifier' # Assume user uses HomeBrew
     $terminal_notifier = '/usr/local/bin/terminal-notifier'
   end
 

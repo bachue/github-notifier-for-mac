@@ -57,7 +57,7 @@ def send_notification notification, token
   details = get_json details_url, basic_header(token)
   url = details['html_url']
 
-  `#{$terminal_notifier} -title 'Github #{type}' -subtitle #{title.inspect} -message #{message.inspect} -open #{url.inspect}`
+  system $terminal_notifier, '-title', "Github #{type}", '-subtitle', title, '-message', message, '-open', url
 end
 
 check_notifications!

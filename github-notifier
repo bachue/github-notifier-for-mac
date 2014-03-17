@@ -12,7 +12,9 @@ def write_down_and_check!
   when nil
     exec 'open', ACCESS_TOKEN_URL
   when '--help'
-    exec 'echo', "Usage: #{$0} token"
+    $stdout.puts "Usage: #{$0} token"
+    $stdout.puts
+    $stdout.puts "Learn more at: https://github.com/bachue/github-notifier-for-mac"
   when String
     token = ARGV[0]
     if check(token) && write_oauth_basic_token(token)
@@ -20,7 +22,7 @@ def write_down_and_check!
       File.open(launchd_path, 'w') do |f|
         f << ERB.new(File.read(File.expand_path(File.dirname(__FILE__) + '/git.bachue.githubnotifier.plist.erb'))).result
       end
-      `launchctl unload #{launchd_path}` # Ignore any error message
+      system 'launchctl', 'upload', launchd_path # Ignore any error message
       $stdout.puts "launchctl load #{launchd_path}"
       exec 'launchctl', 'load', launchd_path
     else
